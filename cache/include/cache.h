@@ -14,12 +14,12 @@
 #include <assert.h>
 #include <errno.h>
 // Windows
-#include <winsock2.h>
+// #include <winsock2.h>
 // #pragma comment(lib, "Ws2_32.lib")
 // UNIX
-// #include <arpa/inet.h>
-// #include <sys/socket.h>
-// #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 void win_assert_perror(int errnum) {
     if (errnum != 0) {

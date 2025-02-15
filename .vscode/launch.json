@@ -3,22 +3,11 @@
   "configurations": [
     {
       "name": "C/C++ Runner: Debug Session",
-      "type": "cppdbg",
+      "type": "lldb",
       "request": "launch",
       "args": [],
-      "stopAtEntry": false,
-      "externalConsole": true,
-      "cwd": "c:/Users/ardas/Documents/source/c_cpp/imdb/cache/src",
-      "program": "c:/Users/ardas/Documents/source/c_cpp/imdb/cache/src/build/Debug/outDebug",
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
+      "cwd": "/Users/ryota/CPP/imdb/imdb/src",
+      "program": "/Users/ryota/CPP/imdb/imdb/src/build/Debug/outDebug"
     }
   ]
 }

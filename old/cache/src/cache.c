@@ -34,7 +34,7 @@ void mainloop(int s) {
     // PROCESS_INFORMATION pi;
     char cmdLine[256];
 
-    s2 = accept(s, (struct sockaddr *)&cli, (unsigned int *)len);
+    s2 = accept(s, (struct sockaddr *)&cli, (unsigned int *)&len);
     if (s2 < 0) 
         return;
 
@@ -142,8 +142,8 @@ int main(int argc, char *argv[]) {
     while(scontinuation)
         mainloop(s);
     
-    closesocket(s);
     // Windows
+    // closesocket(s);
     // WSACleanup();
 
     return 0;

@@ -5,7 +5,9 @@ sorces = $(wildcard ${srcdir}/*.c)
 objects = $(patsubst ${srcdir}/%.c, ${objdir}/%.o, ${sorces})
 
 flags=-Wall -O2 -std=c2x -I./include
-ldflags=-lws2_32
+# for Windows
+# ldflags=-lws2_32
+ldflags=
 
 cc=gcc
 target = ${objdir}/imdb

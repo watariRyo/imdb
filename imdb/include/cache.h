@@ -1,13 +1,14 @@
+#define _GNU_SOURCE
+
 #ifndef CACHE
 #define CACHE
-
-#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
 #include <stddef.h>
 #include <stdarg.h>
 
@@ -20,6 +21,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
+#include "tree.h"
 
 #pragma GCC diagnostic push
 
@@ -52,7 +55,7 @@ struct s_cmdHandler {
 };
 typedef struct s_cmdHandler CmdHandler;
 
-void zero(int8*, int16);
+// void zero(int8*, int16);
 void childloop(Client*);
 void mainloop(int);
 int initserver(int16);

@@ -2,6 +2,8 @@
 
 int32 handle_hello(Client*, int8*, int8*);
 
+extern Node root;
+
 bool scontinuation;
 bool ccontinuation;
 
@@ -33,21 +35,12 @@ int32 handle_hello(Client *cli, int8* folder, int8 *args) {
     return 0;
 }
 
-void zero(int8* buf, int16 size) {
-    int8 *p;
-    int16 n;
-
-    for (n=0, p=buf; n < size; n++, p++)
-        *p = 0;
-
-    return;
-}
-
 void childloop(Client *cli) {
     int8 buf[256];
     int8 *p, *f;
     int16 n;
     int8 cmd[256], folder[256], args[256];
+    Callback cb;
 
     // write(cli->s, "hey\n", 4);
     // exit(0);
@@ -95,10 +88,19 @@ void childloop(Client *cli) {
         *p = 0;
     }
 
-    done:
-        dprintf(cli->s, "cmd:\t%s\n", cmd);
-        dprintf(cli->s, "folder:\t%s\n", folder);
-        dprintf(cli->s, "args:\t%s\n", args);
+done:
+    dprintf(cli->s, "cmd:\t%s\n", cmd);
+    dprintf(cli->s, "folder:\t%s\n", folder);
+    dprintf(cli->s, "args:\t%s\n", args);
+
+    cb = getcmd(cmd);
+    if (!cb) {
+        dprintf(cli->s, "400 Command not found. %s\n", cmd);
+        return;
+    } else {
+        cb(cli, folder, args);
+        return;
+    }
 
     return;
 }
@@ -204,40 +206,56 @@ int initserver(int16 port) {
 int main(int argc, char *argv[]) {
     int16 port;
     int s;
+    Node *n, *n2;
+    Leaf *l;
+    int8 *p;
+    int16 sz;
 
-    Callback x;
+    p = (int8 *)"true";
+    sz = (int16)strlen((char *)p);
+    
+    n = create_node(&root, (int8 *)"/Users/");
+    printf("n\t%p\n", n);
 
-    x = getcmd((int8 *)"hello");
-    printf("%p\n", x);
+    n2 = create_node(&root, (int8 *)"/Users/jobj");
+    printf("n2\t%p\n", n2);
 
-    x = getcmd((int8 *)"asafa");
-    printf("%p\n", x);
+    l = create_leaf(n, (int8 *)"loggedin", p, sz);
+    printf("l\t%p\n", l);
+
+    free(n);
+    free(n2);
+    exit(0);
+    if (argc < 2) {
+        port = (int16)PORT;
+    } else {
+        char* sport = argv[1];
+        port = (int16)atoi(sport);
+    }
+
+    /* Windows
+    WSADATA wsaData;
+    Winsockの初期化
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        fprintf(stderr, "WSAStartup failed\n");
+        exit(EXIT_FAILURE);
+    }
+    */
+
+    s = initserver(port);
+    
+    scontinuation = true;
+    while(scontinuation)
+        mainloop(s);
+    
+    /* Windows
+    closesocket(s);
+    WSACleanup();
+    */
+
+    close(s);
+
     return 0;
-    // if (argc < 2) {
-    //     port = (int16)PORT;
-    // } else {
-    //     char* sport = argv[1];
-    //     port = (int16)atoi(sport);
-    // }
-
-    // // Windows
-    // // WSADATA wsaData;
-    // // Winsockの初期化
-    // // if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-    // //     fprintf(stderr, "WSAStartup failed\n");
-    // //     exit(EXIT_FAILURE);
-    // // }
-    // s = initserver(port);
-    
-    // scontinuation = true;
-    // while(scontinuation)
-    //     mainloop(s);
-    
-    // // Windows
-    // // closesocket(s);
-    // // WSACleanup();
-
-    // return 0;
 }
 
 #pragma GCC diagnostic pop

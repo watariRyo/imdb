@@ -18,8 +18,10 @@
 #define ExampleFile  "/Users/ryota/CPP/imdb/imdb/src/wl.txt"
 #define ExampleFile2 "/Users/ryota/CPP/imdb/imdb/src/wl.50k.txt"
 
-typedef void* Nullptr;
-Nullptr my_nullptr = 0;
+#ifdef TREE
+    typedef void* Nullptr;
+    Nullptr my_nullptr = 0;
+#endif
 
 #define find_last(x) find_last_linear(x)
 #define find_leaf(x, y) find_leaf_linear(x, y)

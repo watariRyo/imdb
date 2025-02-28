@@ -1,13 +1,16 @@
 /* htable.h */
 #define _GNU_SOURCE
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <fcntl.h>
+#ifdef __unix__
+    #include <unistd.h>
+#endif
+
 
 typedef unsigned int int32;
 typedef unsigned short int16;

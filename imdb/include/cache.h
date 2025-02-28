@@ -4,7 +4,6 @@
 #define CACHE
 
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -14,13 +13,17 @@
 
 #include <assert.h>
 #include <errno.h>
-// Windows
-// #include <winsock2.h>
-// #pragma comment(lib, "Ws2_32.lib")
-// UNIX
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#ifdef _WIN32
+    // Windows
+    #include <winsock2.h>
+    #pragma comment(lib, "Ws2_32.lib")
+# else
+    // UNIX
+    #include <unistd.h>
+    #include <arpa/inet.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+# endif
 
 #include "tree.h"
 

@@ -113,12 +113,14 @@ void mainloop(int s) {
     char *ip;
     int16 port;
     Client *client;
-    // Unix
-    pid_t pid;
     // Windows
-    // STARTUPINFO si;
-    // PROCESS_INFORMATION pi;
-
+    # ifdef _WIN32
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+    # else
+    // Unix
+        pid_t pid;
+    # endif
     s2 = accept(s, (struct sockaddr *)&cli, (unsigned int *)&len);
     if (s2 < 0) 
         return;
@@ -136,44 +138,46 @@ void mainloop(int s) {
     client->port = port;
     strncpy(client->ip, ip, 15);
 
-    // for Windows
-    // ZeroMemory(&si, sizeof(si));
-    // si.cb = sizeof(si);
-    // ZeroMemory(&pi, sizeof(pi));
+    #ifdef _WIN32
+        // for Windows
+        ZeroMemory(&si, sizeof(si));
+        si.cb = sizeof(si);
+        ZeroMemory(&pi, sizeof(pi));
 
-    // if (!CreateProcess(NULL, cmdLine, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
-    //     perror("CreateProcess failed");
-    //     free(client);
-    //     return;
-    // } else {
-    //     dprintf(s2, "100 Connected to Cache server.\n");
-    //     ccontinuation = true;
-    //     while (ccontinuation)
-    //         childloop(client);
+        if (!CreateProcess(NULL, cmdLine, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+            perror("CreateProcess failed");
+            free(client);
+            return;
+        } else {
+            dprintf(s2, "100 Connected to Cache server.\n");
+            ccontinuation = true;
+            while (ccontinuation)
+                childloop(client);
 
-    //     close(s2);
-    //     // 子プロセスのハンドルを閉じる
-    //     CloseHandle(pi.hProcess);
-    //     CloseHandle(pi.hThread);
-    //     free(client);
-    //     return;
-    // }
+            close(s2);
+            // 子プロセスのハンドルを閉じる
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+            free(client);
+            return;
+        }
+    # else
+        // for Unix
+        pid = fork();
+        if (pid) {
+            free(client);
+            return;
+        } else {
+            dprintf(s2, "100 Connected to Cache server.\n");
+            ccontinuation = true;
+            while (ccontinuation)
+                childloop(client);
 
-    // for Unix
-    pid = fork();
-    if (pid) {
-        free(client);
-        return;
-    } else {
-        dprintf(s2, "100 Connected to Cache server.\n");
-        ccontinuation = true;
-        while (ccontinuation)
-            childloop(client);
-
-        close(s2);
-        free(client);
-        return;
-    }
+            close(s2);
+            free(client);
+            return;
+        }
+    # endif
 }
 
 int initserver(int16 port) {
@@ -233,14 +237,16 @@ int main(int argc, char *argv[]) {
         port = (int16)atoi(sport);
     }
 
-    /* Windows
-    WSADATA wsaData;
-    Winsockの初期化
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        fprintf(stderr, "WSAStartup failed\n");
-        exit(EXIT_FAILURE);
-    }
-    */
+    // Windows
+    #ifdef _WIN32
+        WSADATA wsaData;
+        // Winsockの初期化
+        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+            fprintf(stderr, "WSAStartup failed\n");
+            exit(EXIT_FAILURE);
+        }
+    #endif
+    
 
     s = initserver(port);
     
@@ -248,10 +254,11 @@ int main(int argc, char *argv[]) {
     while(scontinuation)
         mainloop(s);
     
-    /* Windows
-    closesocket(s);
-    WSACleanup();
-    */
+    // Windows
+    #ifdef _WIN32
+        closesocket(s);
+        WSACleanup();
+    #endif
 
     close(s);
 
